@@ -1,0 +1,35 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r ./codigo/requirements.txt
+
+    - name: Build Docker image
+      run: docker build . --file ./codigo/Dockerfile --tag app
+
+    - name: Run tests
+      run: |
+        # Nossos comandos de teste aqui
+        echo "Running tests..."
+
+    - name: Run Docker container
+      run: docker run -d -p 8000:8000 app
